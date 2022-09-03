@@ -9,7 +9,7 @@ You Will Need :
 
 * Python 3.6-3.7-3.8
 * Computer
-* Download The Repository Via Github eg : git clone https://github.com/Lelouche01/4ML3L3-Backdoor .
+* Download The Repository Via Github eg : git clone https://github.com/trhacknon/4ML3L3-Backdoor .
 
 # Features 
 
@@ -28,8 +28,8 @@ Actually This Program has Several Features Such As :
 
 For Any Questions You Can Find Me on This Platforms :
 
-* Twitter : https://twitter.com/amait0u
-* Instagram : https://www.instagram.com/amait0u
+* Twitter : https://twitter.com/
+* Instagram : https://www.instagram.com/
 
 # Help
 
